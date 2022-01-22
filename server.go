@@ -540,6 +540,7 @@ func (s *Server) serverWorker(ch chan *serverWorkerData) {
 	go s.serverWorker(ch)
 }
 
+// 创建工作线程以及channel
 // initServerWorkers creates worker goroutines and channels to process incoming
 // connections to reduce the time spent overall on runtime.morestack.
 func (s *Server) initServerWorkers() {
@@ -576,6 +577,7 @@ func NewServer(opt ...ServerOption) *Server {
 	chainStreamServerInterceptors(s)
 	s.cv = sync.NewCond(&s.mu)
 	if EnableTracing {
+		// 获取调用的信息，参数为堆栈信息
 		_, file, line, _ := runtime.Caller(1)
 		s.events = trace.NewEventLog("grpc.Server", fmt.Sprintf("%s:%d", file, line))
 	}
@@ -1081,6 +1083,7 @@ func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Str
 	return err
 }
 
+// 将所有一元服务器拦截成一个
 // chainUnaryServerInterceptors chains all unary server interceptors into one.
 func chainUnaryServerInterceptors(s *Server) {
 	// Prepend opts.unaryInt to the chaining interceptors if it exists, since unaryInt will
@@ -1371,6 +1374,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	return err
 }
 
+// 将所有流式服务器拦截成一个
 // chainStreamServerInterceptors chains all stream server interceptors into one.
 func chainStreamServerInterceptors(s *Server) {
 	// Prepend opts.streamInt to the chaining interceptors if it exists, since streamInt will
